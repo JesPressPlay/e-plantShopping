@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import './ProductList.css'
 import CartItem from './CartItem';
+import { addItem } from './CartSlice';
+
 function ProductList({ onHomeClick }) {
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
+    const [addToCart, setAddToCart] = useState({});
 
     const plantsArray = [
         {
@@ -252,6 +255,16 @@ function ProductList({ onHomeClick }) {
         e.preventDefault();
         setShowCart(false);
     };
+
+    const handleAddToCart = (product) => {
+        dispatchEvent(addItem(product)); // Dispatch the action to add product to cart (Redux action)
+
+        setAddedtoCart((prevState) => ({ // Update the local state to reflect that the product has been added
+            ...prevState,                // Spread the previous state to retain existing entries
+            [product.name]: true,        // Set the current prod name as a key with a value of TRUE to mark it as added
+        }));
+    };
+
     return (
         <div>
             <div className="navbar" style={styleObj}>
@@ -274,14 +287,37 @@ function ProductList({ onHomeClick }) {
             </div>
             {!showCart ? (
                 <div className="product-grid">
-
-
+                {plantsArray.map((category, index) => ( // Loop thru each category
+                    <div key={index}> {/* Unique key for each category div */}
+                        <h1>
+                            <div>{category.category}</div> {/* Display category name */}
+                        </h1>
+                    <div className="product-list"> {/* Container for the list of plant cards */}
+                        {category.plants.map((plant, plantIndex) => ( // Loop thru each plant in current category
+                            <div className="product-card" key={plantIndex}> {/* Unique key for each plant */}
+                                <img
+                                    className="product-image"
+                                    src={plant.image}
+                                    alt={plant.name}
+                                />
+                                <div className="product-title">{plant.name}</div>
+                                <div className="product-description">{plant.description}</div>
+                                <div className="product-cost">{plant.cost}</div>
+                                <button
+                                    className="product-button"
+                                    onClick={() => handleAddToCart(plant)}
+                                >
+                                    Add to Cart
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                ))}
                 </div>
             ) : (
                 <CartItem onContinueShopping={handleContinueShopping} />
             )}
         </div>
-    );
-}
+    )
 
 export default ProductList;
