@@ -7,7 +7,6 @@ import { addItem } from './CartSlice';
 function ProductList({ onHomeClick }) {
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
-    const [addedToCart, setAddedToCart] = useState({});
     const dispatch = useDispatch();
     const cartItems = useSelector(state => state.cart.items);
 
@@ -264,10 +263,6 @@ function ProductList({ onHomeClick }) {
 
         dispatch(addItem(product)); // Dispatch the action to add product to cart (Redux action)
 
-        setAddedToCart((prevState) => ({ // Update the local state to reflect that the product has been added
-            ...prevState,                // Spread the previous state to retain existing entries
-            [product.name]: true,        // Set the current prod name as a key with a value of TRUE to mark it as added
-        }));
     };
 
 return (
@@ -308,11 +303,11 @@ return (
                                     <div className="product-description">{plant.description}</div>
                                     <div className="product-cost">{plant.cost}</div>
                                     <button
-                                        className="product-button"
-                                        onClick={() => handleAddToCart(plant)}
-                                        disabled={addedToCart[plant.name]}
+                                    className="product-button"
+                                    onClick={() => handleAddToCart(plant)}
+                                    disabled={cartItems.some(item => item.name === plant.name)}
                                     >
-                                        {addedToCart[plant.name] ? "Added to Cart" : "Add to Cart"}
+                                        {cartItems.some(item => item.name === plant.name) ? "Added to Cart" : "Add to Cart"}
                                     </button>
                                 </div>
                             ))}
